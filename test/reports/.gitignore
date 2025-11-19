@@ -1,0 +1,6 @@
+# Ignore all generated reports
+*
+!.gitignore
+!README.md
+
+

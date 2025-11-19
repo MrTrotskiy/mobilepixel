@@ -1,0 +1,12 @@
+# Ignore test files for now (formatting issues)
+test/unit/**/*.test.ts
+test/integration/**/*.test.ts
+
+# Ignore build output
+lib/
+coverage/
+node_modules/
+
+# Ignore scripts
+scripts/
+

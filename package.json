@@ -1,0 +1,105 @@
+{
+  "name": "@mobilepixel/mcp",
+  "mcpName": "io.github.mobilepixel/mcp",
+  "version": "2.1.4",
+  "description": "MobilePixel - Pixel-perfect mobile automation with 50+ AI-powered tools, parallel execution, and test sharding for iOS & Android. Pro version available for $20/month with 94+ tools and advanced features.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrTrotskiy/mobilepixel.git"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "Apache-2.0",
+  "scripts": {
+    "start": "node lib/index.js",
+    "build": "tsc",
+    "build:open": "tsc --project tsconfig.open.json",
+    "build:pro": "tsc --project tsconfig.pro.json",
+    "build:both": "npm run build:open && npm run build:pro",
+    "publish:open": "node scripts/publish-open.js",
+    "publish:pro": "node scripts/publish-pro.js",
+    "publish:both": "npm run publish:open && npm run publish:pro",
+    "dev": "npm run build && npm start",
+    "lint": "eslint .",
+    "fixlint": "eslint . --fix",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "mocha --require ts-node/register \"test/unit/**/*.test.ts\"",
+    "test:integration": "mocha --require ts-node/register \"test/integration/**/*.test.ts\"",
+    "test:all": "mocha --require ts-node/register \"test/unit/**/*.test.ts\" \"test/integration/**/*.test.ts\"",
+    "test:watch": "mocha --require ts-node/register --watch \"test/**/*.test.ts\"",
+    "test:coverage": "nyc npm run test:all",
+    "test:coverage:report": "nyc report --reporter=text --reporter=html",
+    "test:benchmarks": "ts-node test/benchmarks/benchmark-suite.ts",
+    "watch": "tsc --watch",
+    "watch:open": "tsc --project tsconfig.open.json --watch",
+    "watch:pro": "tsc --project tsconfig.pro.json --watch",
+    "clean": "rm -rf lib lib-open lib-pro",
+    "clean:open": "rm -rf lib-open",
+    "clean:pro": "rm -rf lib-pro",
+    "prepare": "husky",
+    "license:generate": "ts-node scripts/generate-license.ts",
+    "license:validate": "ts-node scripts/validate-license.ts",
+    "version:sync": "node scripts/sync-versions.ts",
+    "version": "node scripts/sync-versions.ts && git add package-*.json"
+  },
+  "files": [
+    "lib",
+    "lib-open",
+    "lib-pro",
+    "scripts/publish-open.js",
+    "scripts/publish-pro.js"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.13.2",
+    "@types/ws": "^8.18.1",
+    "commander": "14.0.0",
+    "express": "5.1.0",
+    "fast-xml-parser": "5.2.5",
+    "pngjs": "^7.0.0",
+    "ws": "^8.18.3",
+    "zod-to-json-schema": "3.24.6"
+  },
+  "optionalDependencies": {
+    "pixelmatch": "5.2.1",
+    "sharp": "^0.34.4",
+    "tesseract.js": "^5.0.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.19.0",
+    "@stylistic/eslint-plugin": "^3.0.1",
+    "@types/commander": "^2.12.0",
+    "@types/express": "^5.0.3",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.13.10",
+    "@types/pixelmatch": "^5.2.6",
+    "@types/pngjs": "^6.0.5",
+    "@types/sinon": "^17.0.4",
+    "@typescript-eslint/eslint-plugin": "^8.28.0",
+    "@typescript-eslint/parser": "^8.26.1",
+    "@typescript-eslint/utils": "^8.26.1",
+    "eslint": "^9.19.0",
+    "eslint-plugin": "^1.0.1",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-notice": "^1.0.0",
+    "husky": "^9.1.7",
+    "mocha": "^11.1.0",
+    "nyc": "^17.1.0",
+    "sinon": "^21.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  },
+  "main": "lib/index.js",
+  "bin": {
+    "mcp-server-mobile": "lib/index.js"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "author": "MrTrotskiy",
+  "bugs": {
+    "url": "https://github.com/MrTrotskiy/mobilepixel/issues"
+  },
+  "homepage": "https://github.com/MrTrotskiy/mobilepixel#readme"
+}

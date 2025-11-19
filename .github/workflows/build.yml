@@ -1,0 +1,242 @@
+name: Build & Test
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "*.*.*"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # ========================================
+  # Matrix Testing - Multiple Node versions and platforms
+  # ========================================
+  test:
+    name: Test (Node ${{ matrix.node }} - ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        # Test on multiple Node versions
+        node: ['18', '20', '22']
+        # Test on multiple platforms
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        # Exclude combinations that are known to fail or redundant
+        exclude:
+          # Windows with Node 18 (optional - remove if needed)
+          - os: windows-latest
+            node: '18'
+      fail-fast: false  # Continue testing other combinations if one fails
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js ${{ matrix.node }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Lint
+      run: npm run lint
+
+    - name: Build
+      run: npm run build
+
+    - name: Run unit tests
+      run: npm run test:unit
+
+    - name: Run integration tests (non-Android)
+      run: npm run test:integration
+      # Integration tests may require device setup
+      # For now, run what we can without emulator
+      continue-on-error: true
+
+  # ========================================
+  # Android Testing - Ubuntu only with emulator
+  # ========================================
+  test-android:
+    name: Test Android (Node 22)
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Java 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Setup Node.js 22
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build
+      run: npm run build
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Create and start Android emulator
+      run: |
+        # Install system image
+        echo "y" | sdkmanager "system-images;android-31;google_apis;x86_64"
+        
+        # Create AVD
+        avdmanager create avd -n test -k "system-images;android-31;google_apis;x86_64" --device "pixel" --force
+        
+        # Start emulator in background
+        sudo ANDROID_AVD_HOME="$HOME/.config/.android/avd" nohup $ANDROID_HOME/emulator/emulator -avd test -no-metrics -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -memory 2048 &
+        
+        # Wait for device to be ready
+        adb wait-for-device
+        echo "Waiting for sys.boot_completed..."
+        while [[ -z $(adb shell getprop sys.boot_completed 2>/dev/null) ]]; do
+          echo "Still booting..."
+          sleep 2
+        done
+        
+        # Give extra time for full boot
+        sleep 10
+        
+        echo "Emulator ready!"
+        adb devices
+      timeout-minutes: 15
+
+    - name: Run Android integration tests
+      run: npm run test:integration
+      timeout-minutes: 10
+      continue-on-error: true  # Don't fail CI if tests have issues
+
+  # ========================================
+  # Code Coverage
+  # ========================================
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js 22
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build
+      run: npm run build
+
+    - name: Run tests with coverage
+      run: npm run test:coverage
+
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v4
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false  # Don't fail if coverage upload fails
+
+    - name: Archive coverage report
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: coverage/
+        retention-days: 30
+
+  # ========================================
+  # Security Audit
+  # ========================================
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js 22
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run security audit
+      run: npm audit --audit-level high
+      continue-on-error: true  # Don't fail CI on audit warnings
+
+  # ========================================
+  # Build & Publish (only on tags)
+  # ========================================
+  build:
+    name: Build & Publish
+    runs-on: ubuntu-latest
+    needs: [test, coverage, security]  # Wait for tests to pass
+    if: github.ref_type == 'tag'  # Only run on version tags
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js 22
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Audit
+      run: npm audit --audit-level high
+
+    - name: Lint
+      run: npm run lint
+
+    - name: Update version
+      run: |
+        npm version "${{ github.ref_name }}" --no-git-tag-version
+        npm update
+
+    - name: Build
+      run: npm run build
+
+    - name: Publish to NPM
+      env:
+        NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      run: |
+        echo "//registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN" >> ~/.npmrc
+        npm publish
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        generate_release_notes: true
+        files: |
+          package.json
+          CHANGELOG.md

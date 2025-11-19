@@ -1,0 +1,80 @@
+# .gitignore for Open Source Version (@mobilepixel/mcp)
+# This file excludes all Pro/Enterprise features from the Open Source repo
+
+# Standard ignores (same as main .gitignore)
+**/.DS_Store
+node_modules
+.nyc_output
+test/annotated-screenshots
+test/recordings
+test/baselines-test
+test/bug-reports
+eng.traineddata
+.cursor
+.claude
+
+# Build directories
+lib
+lib-pro
+
+# Exclude Pro build files
+lib-pro/
+package-pro.json
+tsconfig.pro.json
+README-PRO.md
+
+# Exclude AI Tools
+src/ai/
+src/server/tools/ai-tools.ts
+
+# Exclude Visual Tools
+src/visual/
+src/server/tools/visual-tools.ts
+
+# Exclude Enterprise Tools
+src/accessibility/
+src/monitoring/
+src/operations/
+src/reporting/
+src/security/
+src/testing/
+src/server/tools/enterprise-tools.ts
+
+# Exclude Enterprise features
+src/parallel-executor.ts
+src/device-pool.ts
+src/test-sharding.ts
+src/context-switcher.ts
+
+# Exclude license management (keep only basic validation)
+src/core/license-manager.ts
+src/core/license-validator.ts
+scripts/generate-license.ts
+scripts/validate-license.ts
+scripts/LICENSE-SCRIPTS-README.md
+
+# Exclude Pro documentation
+docs/two-repo/
+quick-start/
+
+# Keep only Open Source files:
+# - src/core/ (except license-manager.ts, license-validator.ts)
+# - src/platforms/
+# - src/device/
+# - src/actions/
+# - src/utils/
+# - src/transport/
+# - src/server/
+# - src/server/tools/core-tools.ts
+# - src/server/tools/types.ts
+# - src/server/tools/index.ts
+# - src/index.ts
+# - src/server.ts (modified to exclude Pro features)
+
+# Distribution and testing files
+*.tgz
+*.tar.gz
+test-*.log
+debug-*.txt
+*_config_private.json
+*_secrets.json

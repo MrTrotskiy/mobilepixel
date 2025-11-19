@@ -1,0 +1,22 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+  "name": "io.github.mobilepixel/mcp",
+  "description": "MobilePixel Open Source - Essential mobile automation with 20 core tools for iOS & Android testing",
+  "status": "active",
+  "repository": {
+    "url": "https://github.com/MrTrotskiy/mobilepixel",
+    "source": "github"
+  },
+  "version": "2.0.0",
+  "packages": [
+    {
+      "registry_type": "npm",
+      "registry_base_url": "https://registry.npmjs.org",
+      "identifier": "@mobilepixel/mcp",
+      "version": "2.0.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

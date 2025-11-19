@@ -1,0 +1,111 @@
+{
+  "name": "@mobilepixel/mcp",
+  "mcpName": "io.github.mobilepixel/mcp",
+  "version": "2.1.6",
+  "description": "MobilePixel Open Source - Essential mobile automation with 20 core tools for iOS & Android",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrTrotskiy/mobilepixel.git"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "Apache-2.0",
+  "scripts": {
+    "start": "node lib-open/index.js",
+    "build": "tsc --project tsconfig.open.json",
+    "dev": "npm run build && npm start",
+    "lint": "eslint .",
+    "fixlint": "eslint . --fix",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "mocha --require ts-node/register 'test/unit/**/*.test.ts'",
+    "test:integration": "mocha --require ts-node/register 'test/integration/**/*.test.ts'",
+    "test:all": "mocha --require ts-node/register \"test/unit/**/*.test.ts\" \"test/integration/**/*.test.ts\"",
+    "test:watch": "mocha --require ts-node/register --watch 'test/**/*.test.ts'",
+    "test:coverage": "nyc npm run test:all",
+    "test:coverage:report": "nyc report --reporter=text --reporter=html",
+    "watch": "tsc --project tsconfig.open.json --watch",
+    "clean": "rm -rf lib"
+  },
+  "files": [
+    "lib-open/core",
+    "lib-open/platforms",
+    "lib-open/utils",
+    "lib-open/actions",
+    "lib-open/transport",
+    "lib-open/pro/device/session-manager.js",
+    "lib-open/pro/testing/test-context.js",
+    "lib-open/server/tools/core-tools.js",
+    "lib-open/server/tools/types.js",
+    "lib-open/server/tools/index.js",
+    "lib-open/server.js",
+    "lib-open/index.js",
+    "LICENSE",
+    "README.md"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.13.2",
+    "@types/ws": "^8.18.1",
+    "commander": "14.0.0",
+    "fast-xml-parser": "5.2.5",
+    "pngjs": "^7.0.0",
+    "ws": "^8.18.3",
+    "zod-to-json-schema": "3.24.6"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.19.0",
+    "@stylistic/eslint-plugin": "^3.0.1",
+    "@types/commander": "^2.12.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.13.10",
+    "@types/pngjs": "^6.0.5",
+    "@types/sinon": "^17.0.4",
+    "@typescript-eslint/eslint-plugin": "^8.28.0",
+    "@typescript-eslint/parser": "^8.26.1",
+    "@typescript-eslint/utils": "^8.26.1",
+    "eslint": "^9.19.0",
+    "eslint-plugin": "^1.0.1",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-notice": "^1.0.0",
+    "husky": "^9.1.7",
+    "mocha": "^11.1.0",
+    "nyc": "^17.1.0",
+    "sinon": "^21.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  },
+  "main": "lib-open/index.js",
+  "bin": {
+    "mcp-server-mobile": "lib-open/index.js"
+  },
+  "directories": {
+    "lib": "lib-open"
+  },
+  "keywords": [
+    "mobile",
+    "automation",
+    "testing",
+    "ios",
+    "android",
+    "mcp",
+    "open-source",
+    "appium",
+    "webdriver",
+    "mobile-testing"
+  ],
+  "author": "MrTrotskiy",
+  "bugs": {
+    "url": "https://github.com/MrTrotskiy/mobilepixel/issues"
+  },
+  "homepage": "https://github.com/MrTrotskiy/mobilepixel#readme",
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/MrTrotskiy"
+  },
+  "pricing": {
+    "tier": "open-source",
+    "price": "$0",
+    "tools": 20
+  }
+}
