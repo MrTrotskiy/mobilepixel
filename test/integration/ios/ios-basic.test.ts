@@ -29,6 +29,7 @@ describe("iOS Integration Tests", function() {
 	let device: Robot | null = null;
 	let simctlManager: any = null;
 	let iosManager: any = null;
+	let wdaAvailable = false;
 
 	before(async function() {
 		// Skip if not on macOS
@@ -61,11 +62,29 @@ describe("iOS Integration Tests", function() {
 			if (simulators.length > 0) {
 				device = new Simctl(simulators[0].uuid);
 				console.log(`Using simulator: ${simulators[0].name}`);
+
+				// Check if WDA is available by checking installed apps
+				if (device) {
+					try {
+						const apps = await device.listApps();
+						wdaAvailable = apps.some(app => app.packageName === "com.facebook.WebDriverAgentRunner.xctrunner");
+						if (wdaAvailable) {
+							console.log("WebDriverAgent is installed");
+						} else {
+							console.log("WebDriverAgent is NOT installed - tests requiring WDA will be skipped");
+							console.log("To install WDA: https://github.com/MrTrotskiy/mobilepixel/wiki/");
+						}
+					} catch (err) {
+						console.log("Could not check WDA installation status");
+					}
+				}
 			} else {
 				const physicalDevices = iosManager.listConnectedDevices();
 				if (physicalDevices.length > 0) {
 					device = new IosRobot(physicalDevices[0].udid);
 					console.log(`Using physical device: ${physicalDevices[0].name}`);
+					// Assume WDA might be available on physical devices
+					wdaAvailable = true;
 				}
 			}
 
@@ -117,7 +136,7 @@ describe("iOS Integration Tests", function() {
 
 	describe("Screen Operations", function() {
 		it("should take a screenshot", async function() {
-			if (!device) {
+			if (!device || !wdaAvailable) {
 				this.skip();
 				return;
 			}
@@ -128,7 +147,7 @@ describe("iOS Integration Tests", function() {
 		});
 
 		it("should get screen size", async function() {
-			if (!device) {
+			if (!device || !wdaAvailable) {
 				this.skip();
 				return;
 			}
@@ -141,7 +160,7 @@ describe("iOS Integration Tests", function() {
 		});
 
 		it("should get screen elements", async function() {
-			if (!device) {
+			if (!device || !wdaAvailable) {
 				this.skip();
 				return;
 			}
@@ -168,7 +187,7 @@ describe("iOS Integration Tests", function() {
 		});
 
 		it("should launch and terminate Settings app", async function() {
-			if (!device) {
+			if (!device || !wdaAvailable) {
 				this.skip();
 				return;
 			}
@@ -192,7 +211,7 @@ describe("iOS Integration Tests", function() {
 
 	describe("Input Operations", function() {
 		it("should tap on screen coordinates", async function() {
-			if (!device) {
+			if (!device || !wdaAvailable) {
 				this.skip();
 				return;
 			}
@@ -206,7 +225,7 @@ describe("iOS Integration Tests", function() {
 		});
 
 		it("should perform swipe gesture", async function() {
-			if (!device) {
+			if (!device || !wdaAvailable) {
 				this.skip();
 				return;
 			}
@@ -218,7 +237,7 @@ describe("iOS Integration Tests", function() {
 		});
 
 		it("should press home button", async function() {
-			if (!device) {
+			if (!device || !wdaAvailable) {
 				this.skip();
 				return;
 			}
@@ -230,7 +249,7 @@ describe("iOS Integration Tests", function() {
 
 	describe("Orientation", function() {
 		it("should get current orientation", async function() {
-			if (!device) {
+			if (!device || !wdaAvailable) {
 				this.skip();
 				return;
 			}

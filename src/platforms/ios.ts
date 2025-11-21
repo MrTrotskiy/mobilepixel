@@ -711,4 +711,15 @@ export class IosManager {
 
 		return devices;
 	}
+
+	/**
+	 * List connected physical iOS devices
+	 * Alias for listDevices() to match expected API
+	 */
+	public listConnectedDevices(): Array<{ udid: string; name: string }> {
+		return this.listDevices().map(device => ({
+			udid: device.deviceId,
+			name: device.deviceName,
+		}));
+	}
 }
