@@ -149,7 +149,7 @@ const loadToolConfig = (): Record<string, boolean> => {
 		// Validate that config has 'tools' property
 		if (!config.tools || typeof config.tools !== "object") {
 			trace(`Warning: Invalid mcp-config.json structure, using essential mode`);
-			trace(`✓ Tool mode: essential (~20 tools)`);
+			trace(`[OK] Tool mode: essential (~20 tools)`);
 			return ESSENTIAL_CONFIG;
 		}
 
@@ -161,26 +161,26 @@ const loadToolConfig = (): Record<string, boolean> => {
 		switch (mode) {
 			case "essential":
 				toolConfig = ESSENTIAL_CONFIG;
-				trace(`✓ Tool mode: essential (~20 core + composite tools)`);
+				trace(`[OK] Tool mode: essential (~20 core + composite tools)`);
 				break;
 
 			case "custom":
 				// Merge with full config to ensure all keys exist
 				toolConfig = { ...FULL_CONFIG, ...config.tools.categories };
 				const enabledCategories = Object.keys(toolConfig).filter(k => toolConfig[k]);
-				trace(`✓ Tool mode: custom`);
-				trace(`✓ Enabled categories (${enabledCategories.length}/${Object.keys(FULL_CONFIG).length}): ${enabledCategories.join(", ")}`);
+				trace(`[OK] Tool mode: custom`);
+				trace(`[OK] Enabled categories (${enabledCategories.length}/${Object.keys(FULL_CONFIG).length}): ${enabledCategories.join(", ")}`);
 				break;
 
 			case "full":
 				toolConfig = FULL_CONFIG;
-				trace(`✓ Tool mode: full (all 94+ tools enabled)`);
+				trace(`[OK] Tool mode: full (all 94+ tools enabled)`);
 				break;
 
 			default:
 				trace(`Warning: Unknown mode "${mode}", using essential`);
 				toolConfig = ESSENTIAL_CONFIG;
-				trace(`✓ Tool mode: essential (~20 tools)`);
+				trace(`[OK] Tool mode: essential (~20 tools)`);
 				break;
 		}
 
@@ -188,7 +188,7 @@ const loadToolConfig = (): Record<string, boolean> => {
 	} catch (error: any) {
 		// Config file doesn't exist - use essential mode as default
 		trace(`No mcp-config.json found, using essential mode (recommended)`);
-		trace(`✓ Tool mode: essential (~20 core + composite tools)`);
+		trace(`[OK] Tool mode: essential (~20 core + composite tools)`);
 		return ESSENTIAL_CONFIG;
 	}
 };
