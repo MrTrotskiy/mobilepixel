@@ -14,9 +14,18 @@ eng.traineddata
 .cursor
 .claude
 
+# IDE settings
+.idea/
+.vscode/
+
 # Build directories
 lib
 lib-pro
+dist-open
+dist-pro
+
+# Temporary files
+nul
 
 # Exclude Pro build files
 lib-pro/
