@@ -20,6 +20,7 @@ eng.traineddata
 
 # Build directories
 lib
+lib-open
 lib-pro
 dist-open
 dist-pro
@@ -85,6 +86,7 @@ quick-start/
 *.tgz
 *.tar.gz
 test-*.log
+test-results.json
 debug-*.txt
 *_config_private.json
 *_secrets.json
