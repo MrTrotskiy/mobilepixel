@@ -5,6 +5,7 @@
 **/.DS_Store
 node_modules
 .nyc_output
+coverage
 test/annotated-screenshots
 test/recordings
 test/baselines-test
