@@ -1,0 +1,102 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2024 MrTrotskiy
+
+name: iOS Integration Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  ios-simulator-tests:
+    runs-on: macos-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: List available simulators
+        run: xcrun simctl list devices available
+
+      - name: Boot iOS Simulator
+        run: |
+          # Find an available iPhone simulator
+          SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 15" | head -1 | grep -oE '[A-F0-9-]{36}')
+
+          if [ -z "$SIMULATOR_ID" ]; then
+            # Fallback to iPhone 14 if iPhone 15 not available
+            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 14" | head -1 | grep -oE '[A-F0-9-]{36}')
+          fi
+
+          if [ -z "$SIMULATOR_ID" ]; then
+            # Fallback to any iPhone
+            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone" | head -1 | grep -oE '[A-F0-9-]{36}')
+          fi
+
+          echo "Booting simulator: $SIMULATOR_ID"
+          xcrun simctl boot "$SIMULATOR_ID" || true
+
+          # Wait for simulator to be ready
+          echo "Waiting for simulator to boot..."
+          sleep 10
+
+          # Verify simulator is booted
+          xcrun simctl list devices booted
+
+      - name: Install and start WebDriverAgent
+        run: |
+          # Install appium and WebDriverAgent
+          npm install -g appium
+          appium driver install xcuitest
+
+          # Start appium in background
+          appium --relaxed-security &
+          APPIUM_PID=$!
+          echo "APPIUM_PID=$APPIUM_PID" >> $GITHUB_ENV
+
+          # Wait for appium to start
+          sleep 10
+
+          # Verify appium is running
+          curl -s http://localhost:4723/status || echo "Appium status check"
+
+      - name: Build TypeScript
+        run: npm run build
+
+      - name: Run iOS integration tests
+        run: npm run test:integration
+        env:
+          CI: true
+
+      - name: Shutdown simulator
+        if: always()
+        run: |
+          xcrun simctl shutdown all || true
+
+          # Kill appium if running
+          if [ -n "$APPIUM_PID" ]; then
+            kill $APPIUM_PID || true
+          fi
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            test-results.json
+            coverage/
+          retention-days: 7
