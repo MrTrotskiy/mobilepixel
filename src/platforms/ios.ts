@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2024 MrTrotskiy
+
 import { Socket } from "node:net";
 import { execFileSync } from "node:child_process";
 

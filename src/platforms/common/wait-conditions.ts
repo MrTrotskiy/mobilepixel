@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2024 MrTrotskiy
+
 /**
  * Smart waiting conditions for mobile automation
  * Similar to Playwright's waiting mechanisms

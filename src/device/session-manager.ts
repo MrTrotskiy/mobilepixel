@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2024 MrTrotskiy
+
 import { ActionableError } from "../core/robot";
 import { TIMEOUTS } from "../core/config";
 

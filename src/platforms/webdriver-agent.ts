@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2024 MrTrotskiy
+
 import { ActionableError, SwipeDirection, ScreenSize, ScreenElement, Orientation } from "../core/robot";
 import { SessionManager } from "../pro/device/session-manager";
 import { DURATIONS } from "../core/config";

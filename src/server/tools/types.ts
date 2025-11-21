@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2024 MrTrotskiy
+
 /**
  * Common types and utilities for MCP tool registration
  * This file provides shared types used across all tool modules

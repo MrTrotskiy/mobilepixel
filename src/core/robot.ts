@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2024 MrTrotskiy
+
 import { WaitCondition, WaitResult } from "../platforms/common/wait-conditions";
 
 export interface Dimensions {

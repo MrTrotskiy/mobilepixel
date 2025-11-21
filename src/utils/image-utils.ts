@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2024 MrTrotskiy
+
 import { execFileSync, spawnSync } from "child_process";
 import os from "node:os";
 import fs from "node:fs";
