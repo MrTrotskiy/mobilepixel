@@ -1,7 +1,7 @@
 {
   "name": "@mobilepixel/mcp",
   "mcpName": "io.github.mobilepixel/mcp",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "description": "MobilePixel - Pixel-perfect mobile automation with 50+ AI-powered tools, parallel execution, and test sharding for iOS & Android. Pro version available for $20/month with 94+ tools and advanced features.",
   "repository": {
     "type": "git",
