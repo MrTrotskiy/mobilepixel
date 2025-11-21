@@ -18,13 +18,17 @@ import { ok } from "assert";
 import { Robot } from "../../../src/core/robot";
 
 // Dynamic imports for platform-specific modules
-let IPhoneSimulator: any;
-let IOS: any;
+let SimctlManager: any;
+let Simctl: any;
+let IosManager: any;
+let IosRobot: any;
 
 describe("iOS Integration Tests", function() {
 	this.timeout(60000); // 60s timeout for device operations
 
 	let device: Robot | null = null;
+	let simctlManager: any = null;
+	let iosManager: any = null;
 
 	before(async function() {
 		// Skip if not on macOS
@@ -38,8 +42,13 @@ describe("iOS Integration Tests", function() {
 		try {
 			const simModule = await import("../../../src/platforms/iphone-simulator");
 			const iosModule = await import("../../../src/platforms/ios");
-			IPhoneSimulator = simModule.Simctl;
-			IOS = iosModule.IosRobot;
+			SimctlManager = simModule.SimctlManager;
+			Simctl = simModule.Simctl;
+			IosManager = iosModule.IosManager;
+			IosRobot = iosModule.IosRobot;
+
+			simctlManager = new SimctlManager();
+			iosManager = new IosManager();
 		} catch (err) {
 			console.log("Failed to import iOS modules:", err);
 			this.skip();
@@ -48,14 +57,14 @@ describe("iOS Integration Tests", function() {
 
 		// Try to find available iOS device
 		try {
-			const simulators = IPhoneSimulator.listBooted();
+			const simulators = simctlManager.listBootedSimulators();
 			if (simulators.length > 0) {
-				device = new IPhoneSimulator(simulators[0].udid);
+				device = new Simctl(simulators[0].uuid);
 				console.log(`Using simulator: ${simulators[0].name}`);
 			} else {
-				const physicalDevices = IOS.listConnected();
+				const physicalDevices = iosManager.listConnectedDevices();
 				if (physicalDevices.length > 0) {
-					device = new IOS(physicalDevices[0].udid);
+					device = new IosRobot(physicalDevices[0].udid);
 					console.log(`Using physical device: ${physicalDevices[0].name}`);
 				}
 			}
@@ -76,27 +85,27 @@ describe("iOS Integration Tests", function() {
 
 	describe("Device Discovery", function() {
 		it("should list booted simulators", function() {
-			if (process.platform !== "darwin" || !IPhoneSimulator) {
+			if (process.platform !== "darwin" || !simctlManager) {
 				this.skip();
 				return;
 			}
 
-			const simulators = IPhoneSimulator.listBooted();
+			const simulators = simctlManager.listBootedSimulators();
 			ok(Array.isArray(simulators), "Should return an array");
 
 			for (const sim of simulators) {
-				ok(sim.udid, "Simulator should have udid");
+				ok(sim.uuid, "Simulator should have uuid");
 				ok(sim.name, "Simulator should have name");
 			}
 		});
 
 		it("should list connected physical devices", function() {
-			if (process.platform !== "darwin" || !IOS) {
+			if (process.platform !== "darwin" || !iosManager) {
 				this.skip();
 				return;
 			}
 
-			const devices = IOS.listConnected();
+			const devices = iosManager.listConnectedDevices();
 			ok(Array.isArray(devices), "Should return an array");
 
 			for (const dev of devices) {
