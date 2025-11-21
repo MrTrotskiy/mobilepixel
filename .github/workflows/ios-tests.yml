@@ -33,17 +33,24 @@ jobs:
 
       - name: Boot iOS Simulator
         run: |
-          # Find an available iPhone simulator
-          SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 15" | head -1 | grep -oE '[A-F0-9-]{36}')
+          # List available simulators for debugging
+          echo "Available simulators:"
+          xcrun simctl list devices available | grep iPhone | head -10
+
+          # Find an available iPhone simulator UUID (format: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX)
+          SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 15" | head -1 | sed -n 's/.*(\([A-F0-9-]*\)).*/\1/p')
 
           if [ -z "$SIMULATOR_ID" ]; then
-            # Fallback to iPhone 14 if iPhone 15 not available
-            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 14" | head -1 | grep -oE '[A-F0-9-]{36}')
+            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 14" | head -1 | sed -n 's/.*(\([A-F0-9-]*\)).*/\1/p')
           fi
 
           if [ -z "$SIMULATOR_ID" ]; then
-            # Fallback to any iPhone
-            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone" | head -1 | grep -oE '[A-F0-9-]{36}')
+            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone" | head -1 | sed -n 's/.*(\([A-F0-9-]*\)).*/\1/p')
+          fi
+
+          if [ -z "$SIMULATOR_ID" ]; then
+            echo "ERROR: No iPhone simulator found!"
+            exit 1
           fi
 
           echo "Booting simulator: $SIMULATOR_ID"
@@ -51,7 +58,7 @@ jobs:
 
           # Wait for simulator to be ready
           echo "Waiting for simulator to boot..."
-          sleep 10
+          sleep 15
 
           # Verify simulator is booted
           xcrun simctl list devices booted
