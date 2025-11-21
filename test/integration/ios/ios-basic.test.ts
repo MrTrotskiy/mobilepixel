@@ -21,12 +21,12 @@ import { Robot } from "../../../src/core/robot";
 let IPhoneSimulator: any;
 let IOS: any;
 
-describe("iOS Integration Tests", function () {
+describe("iOS Integration Tests", function() {
 	this.timeout(60000); // 60s timeout for device operations
 
 	let device: Robot | null = null;
 
-	before(async function () {
+	before(async function() {
 		// Skip if not on macOS
 		if (process.platform !== "darwin") {
 			console.log("Skipping iOS tests - not on macOS");
@@ -70,12 +70,12 @@ describe("iOS Integration Tests", function () {
 		}
 	});
 
-	after(async function () {
+	after(async function() {
 		device = null;
 	});
 
-	describe("Device Discovery", function () {
-		it("should list booted simulators", function () {
+	describe("Device Discovery", function() {
+		it("should list booted simulators", function() {
 			if (process.platform !== "darwin" || !IPhoneSimulator) {
 				this.skip();
 				return;
@@ -90,7 +90,7 @@ describe("iOS Integration Tests", function () {
 			}
 		});
 
-		it("should list connected physical devices", function () {
+		it("should list connected physical devices", function() {
 			if (process.platform !== "darwin" || !IOS) {
 				this.skip();
 				return;
@@ -106,8 +106,8 @@ describe("iOS Integration Tests", function () {
 		});
 	});
 
-	describe("Screen Operations", function () {
-		it("should take a screenshot", async function () {
+	describe("Screen Operations", function() {
+		it("should take a screenshot", async function() {
 			if (!device) {
 				this.skip();
 				return;
@@ -118,7 +118,7 @@ describe("iOS Integration Tests", function () {
 			ok(screenshot.length > 1000, "Screenshot should have reasonable size");
 		});
 
-		it("should get screen size", async function () {
+		it("should get screen size", async function() {
 			if (!device) {
 				this.skip();
 				return;
@@ -131,7 +131,7 @@ describe("iOS Integration Tests", function () {
 			ok(size.height < 5000, "Height should be reasonable");
 		});
 
-		it("should get screen elements", async function () {
+		it("should get screen elements", async function() {
 			if (!device) {
 				this.skip();
 				return;
@@ -142,8 +142,8 @@ describe("iOS Integration Tests", function () {
 		});
 	});
 
-	describe("App Operations", function () {
-		it("should list installed apps", async function () {
+	describe("App Operations", function() {
+		it("should list installed apps", async function() {
 			if (!device) {
 				this.skip();
 				return;
@@ -158,7 +158,7 @@ describe("iOS Integration Tests", function () {
 			}
 		});
 
-		it("should launch and terminate Settings app", async function () {
+		it("should launch and terminate Settings app", async function() {
 			if (!device) {
 				this.skip();
 				return;
@@ -181,8 +181,8 @@ describe("iOS Integration Tests", function () {
 		});
 	});
 
-	describe("Input Operations", function () {
-		it("should tap on screen coordinates", async function () {
+	describe("Input Operations", function() {
+		it("should tap on screen coordinates", async function() {
 			if (!device) {
 				this.skip();
 				return;
@@ -196,7 +196,7 @@ describe("iOS Integration Tests", function () {
 			await device.tap(centerX, centerY);
 		});
 
-		it("should perform swipe gesture", async function () {
+		it("should perform swipe gesture", async function() {
 			if (!device) {
 				this.skip();
 				return;
@@ -208,7 +208,7 @@ describe("iOS Integration Tests", function () {
 			await device.swipe("down");
 		});
 
-		it("should press home button", async function () {
+		it("should press home button", async function() {
 			if (!device) {
 				this.skip();
 				return;
@@ -219,8 +219,8 @@ describe("iOS Integration Tests", function () {
 		});
 	});
 
-	describe("Orientation", function () {
-		it("should get current orientation", async function () {
+	describe("Orientation", function() {
+		it("should get current orientation", async function() {
 			if (!device) {
 				this.skip();
 				return;
