@@ -187,8 +187,7 @@ jobs:
       run: npm install
 
     - name: Run security audit
-      run: npm audit --audit-level high
-      continue-on-error: true  # Don't fail CI on audit warnings
+      run: npm audit --audit-level high || true  # Don't fail CI on audit warnings
 
   # ========================================
   # Build & Publish (only on tags)
@@ -220,7 +219,17 @@ jobs:
 
     - name: Update version
       run: |
-        npm version "${{ github.ref_name }}" --no-git-tag-version
+        CURRENT_VERSION=$(node -p "require('./package.json').version")
+        TAG_VERSION="${{ github.ref_name }}"
+        # Remove 'v' prefix if present
+        TAG_VERSION="${TAG_VERSION#v}"
+
+        if [ "$CURRENT_VERSION" != "$TAG_VERSION" ]; then
+          echo "Updating version from $CURRENT_VERSION to $TAG_VERSION"
+          npm version "$TAG_VERSION" --no-git-tag-version
+        else
+          echo "Version already matches tag: $CURRENT_VERSION"
+        fi
         npm update
 
     - name: Build
